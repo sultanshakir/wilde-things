@@ -15,46 +15,63 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
         'description' => 'Single quote purchase after login'));
     }
     else if (isset($_POST['stripeToken'])) {
-
       // Simple uniqueness check on the email address
       $existing_customer = get_customer($_POST['stripeEmail']);
 
-      if ($existing_customer) throw new Exception("That e-mail address already exists");
+      if ($existing_customer) {
+        throw new Exception("That e-mail address already exists");
+      }
 
-      $customer = \Stripe\Customer::create(array(
+      if (isset($_POST['subscription_purchase'])) {
+        $customer = \Stripe\Customer::create(array(
         'source'     => $_POST['stripeToken'],
-        'email'    => $_POST['stripeEmail']
+        'email'    => $_POST['stripeEmail'],
+        'plan'     => 'monthly'
         ));
 
+      }
+      else {
+        $customer = \Stripe\Customer::create(array(
+          'source'     => $_POST['stripeToken'],
+          'email'    => $_POST['stripeEmail']
+          ));
+
+        $charge = \Stripe\Charge::create(array(
+          'customer'    => $customer->id,
+          'amount'      => 53500,
+          'currency'    => 'usd',
+          'description' => 'Single quote purchase'));
+      }
       create_customer($_POST['stripeEmail'], $_POST['password'], $customer->id);
 
-      $charge = \Stripe\Charge::create(array(
-        'customer'    => $customer->id,
-        'amount'      => 53500,
-        'currency'    => 'usd',
-        'description' => 'Single quote purchase'));
     }
     else {
       throw new Exception("The Stripe Token or customer was not generated correctly");
     }
-  } catch (Exception $e) {
+  }
+  catch (Exception $e) {
     $error = $e->getMessage();
   }
 
   if (!$error) {
-    $wildeQuotes = array(
-      "A little sincerity is a dangerous thing, and a great deal of it is absolutely fatal.",
-      "Always forgive your enemies; nothing annoys them so much.",
-      "America is the only country that went from barbarism to decadence without civilization in between.",
-      "I think that Man in Playing God overestimated his ability and led many astray.",
-      "I am not young enough to know everything.",
-      "Fashion is a form of ugliness so intolerable that we have to alter it every six months.",
-      "Most modern calendars mar the sweet simplicity of our lives by reminding us that each day that passes is the anniversary of some perfectly uninteresting event.",
-      "Scandal is gossip made tedious by morality."
-      );
+    if (isset($_POST['subscription_purchase'])) {
+      echo "<h2>Thank you for signing up! You'll be getting your Wilde quotes daily in your e-mail</h2>";
+    }
+    else {
+      $wildeQuotes = array(
+        "A little sincerity is a dangerous thing, and a great deal of it is absolutely fatal.",
+        "Always forgive your enemies; nothing annoys them so much.",
+        "America is the only country that went from barbarism to decadence without civilization in between.",
+        "I think that Man in Playing God overestimated his ability and led many astray.",
+        "I am not young enough to know everything.",
+        "Fashion is a form of ugliness so intolerable that we have to alter it every six months.",
+        "Most modern calendars mar the sweet simplicity of our lives by reminding us that each day that passes is the anniversary of some perfectly uninteresting event.",
+        "Scandal is gossip made tedious by morality."
+        );
 
-    echo "<h1>Here's your quote!</h1>";
-    echo "<h2>".$wildeQuotes[array_rand($wildeQuotes)]."</h2>";
+      echo "<h1>Here's your quote!</h1>";
+      echo "<h2>".$wildeQuotes[array_rand($wildeQuotes)]."</h2>";
+    }
   }
   else {
     echo "<div class=\"error\">".$error."</div>";
