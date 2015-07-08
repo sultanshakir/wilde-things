@@ -1,2 +1,3 @@
 *.DS_Storecomposer.lock
 public/customers.txt
+public/cus_*
