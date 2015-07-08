@@ -1,25 +1,21 @@
-<h3>Sign up and buy a quote now! Only $535.00!</h3>
-<form action="charge.php" method="POST">
-	<input type="hidden" name="single_purchase" value="single_purchase" />
-	<input type="password" name="password" placeholder="Password" />
-	<script
-	src="https://checkout.stripe.com/checkout.js" class="stripe-button"
-	data-key="<?php echo $stripe['publishable_key']; ?>"
-	data-description="One Wilde quote"
-	data-amount="53500">
-	</script>
-</form>
-<hr />
-<?php require_once('./login_form.php'); ?>
-<hr />
-<form action="charge.php" method="post">
-	<h3>Sign up to get a new quote every day! Just $400 a month!</h3>
-	<input type="hidden" name="subscription_purchase" value="subscription_purchase" />
-	<input type="password" name="password" placeholder="Password" />
-	<script
-	src="https://checkout.stripe.com/checkout.js" class="stripe-button"
-	data-key="<?php echo $stripe['publishable_key']; ?>"
-	data-description="Wilde monthly subscription"
-	data-amount="40000">
-	</script>
+<h3>Purchase a quote by Oscar Wilde today! Only $535! Limited supply and going fast, buy now!</h3>
+    <!-- to display errors returned by createToken -->
+    <span class="payment-errors"></span>
+    <form id="payment-form" action="charge.php" method="post">
+        <div class="form-row">
+            <label>Card Number</label>
+                <input type="text" size="20" autocomplete="off" class="card-number" />
+        </div>
+        <div class="form-row">
+            <label>CVC</label>
+            <input type="text" size="4" autocomplete="off" class="card-cvc" />
+        </div>
+        <div class="form-row">
+            <label>Expiration (MM/YYYY)</label>
+            <input type="text" size="2" class="card-expiry-month"/>
+            <span> / </span>
+            <input type="text" size="4" class="card-expiry-year"/>
+        </div>
+        <button type="submit" class="submit-button">Buy!</button>
+    </form>
 </form>
